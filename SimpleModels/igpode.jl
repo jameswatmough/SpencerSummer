@@ -10,6 +10,30 @@ function igpode!(dx,x,p,t)
 	dx[3] = x[3]*(e2*c2*x[1]/(1+k2*x[1]) + e3*c3*x[2]/(1+k3*x[2]) - m2)
 end
 
+function Figpode(x,p)
+	c1,c2,c3,e1,e2,e3,k2,k3,m1,m2 = p
+	return([
+    x[1]*((1 - x[1]) - c1*x[2] - c2*x[3]),
+    x[2]*(e1*c1*x[1] - c3*x[3]/(1+k3*x[2]) - m1),
+    x[3]*(e2*c2*x[1]/(1+k2*x[1]) + e3*c3*x[2]/(1+k3*x[2]) - m2)
+	 ])
+end
+
+function Jigpode(x,p)
+	c1,c2,c3,e1,e2,e3,k2,k3,m1,m2 = p
+	return([
+    [ 1 - 2*x[1] - c1*x[2] - c2*x[3] ;;
+		  -c1*x[1];;
+			-c2*x[3]];
+		[ e1*c1*x[2] ;;
+		  e1*c1*x[1] - c3*x[3]*x[2]/(1+k3*x[2])^2 - m1 ;;
+			-c3*x[2]/(1+k3*x[2]) ];
+		[ x[3]*e2*c2*x[1]/(1+k2*x[1])^2 ;;  
+		  x[3]*e3*c3*x[2]/(1+k3*x[2])^2 ;;
+			e2*c2*x[1]/(1+k2*x[1]) + e3*c3*x[2]/(1+k3*x[2]) - m2 ];
+		])
+end
+
 # parameter values for torus solution,
 # but probably better to start with k2 = k3 =0
 r=1;

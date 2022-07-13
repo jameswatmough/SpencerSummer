@@ -44,6 +44,8 @@ diagram = bifurcationdiagram(jet...,
 	# very important parameter. This specifies the maximum amount of recursion
 	# when computing the bifurcation diagram. It means we allow computing branches of branches
 	# at most in the present case.
-	2,
+	3,
 	(args...) -> setproperties(opts_br; pMin = 0.0, pMax = 5., ds = 0.04, dsmax = 0.05, nInversion = 8, detectBifurcation = 3, dsminBisection =1e-18, maxBisectionSteps=20);
 	recordFromSolution = (x, p) -> (predator = x[2], prey = x[1]))
+
+plot(diagram; putspecialptlegend=false, markersize=2, plotfold=false, title = "#branches = $(size(diagram))")

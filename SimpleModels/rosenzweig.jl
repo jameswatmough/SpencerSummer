@@ -48,24 +48,19 @@ opts_po_cont = ContinuationPar(
 	plotEveryStep = 1, nev = 11, tolStability = 1e-6,
 	detectBifurcation = 3, dsminBisection = 1e-6, maxBisectionSteps = 15, tolBisectionEigenvalue = 0.)
 
+Mt = 101
 brH = continuation(
 		br2,2, opts_po_cont,
-		PeriodicOrbitTrapProblem(M=51);
+		PeriodicOrbitTrapProblem(M=Mt);
 		δp = 0.01, ampfactor=1,
-		verobsity = 3, plot = false
+		verobsity = 3, plot = false,
+	  recordFromSolution = (x, p) -> (xtt=reshape(x[1:end-1],2,Mt);
+		  return (max = maximum(xtt[1,:]),
+		  	min = minimum(xtt[1,:]),
+		  	period = x[end]))
 		)
 
-# now to extract the maximums and minimums of the periodic orbits
-# presumably this can be cleaned up nicely
-brH_len = length(brH.γ.sol)
-brH_p = [brH.γ.sol[i].p for i in 1:brH_len]
-# x component of solution is the flattened solution
-# reshape(brH.γ.sol[i].x[1:end-1],2,:) gives the solution in matrix form
-# not clear in documentation what the last entry of x is
-# we'll use just the max/min of prey density along the solution
-brH_max = [maximum(brH.γ.sol[i].x[1:2:end-1]) for i in 1:brH_len]
-brH_min = [minimum(brH.γ.sol[i].x[1:2:end-1]) for i in 1:brH_len]
-plot(br,br2)
-plot!(brH_p,brH_max)
-plot!(brH_p,brH_min)
-
+plot(br,br2,brH)
+# add in the minumum of the orbits
+plot!(brH, vars=(:param, :min))
+plot!(ylab="prey density",xlab="carrying capacity, κ")
